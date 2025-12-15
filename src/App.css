@@ -15,7 +15,7 @@
 
 .App-header {
   background-color: #282c34;
-  min-height: 100vh;
+  min-height: 120px; /* reduced so main is visible */
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -35,4 +35,47 @@
   to {
     transform: rotate(360deg);
   }
+}
+
+/* Kanban styles */
+.board {
+  display: flex;
+  align-items: flex-start;
+  gap: 16px;
+  padding: 16px;
+  overflow-x: auto;
+}
+
+.column {
+  background: #f4f5f7;
+  padding: 12px;
+  border-radius: 6px;
+  width: 260px;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+}
+
+.card-list {
+  min-height: 20px;
+  margin-top: 8px;
+}
+
+.card {
+  background: white;
+  padding: 8px;
+  border-radius: 4px;
+  box-shadow: 0 1px 1px rgba(0,0,0,0.06);
+  margin-bottom: 8px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.small {
+  font-size: 12px;
+  padding: 4px 8px;
+}
+
+.add-column {
+  display: flex;
+  align-items: center;
 }
