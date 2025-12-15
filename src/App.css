@@ -92,7 +92,11 @@
 }
 
 .confirm-dialog {
-  background: #fff;
+  background-color: #ffffff !important; /* forzar fondo totalmente opaco */
+  opacity: 1 !important; /* asegurar sin transparencia */
+  mix-blend-mode: normal; /* evitar fusiones de color con el overlay */
+  position: relative;
+  z-index: 1; /* asegurar que el diálogo se muestre sobre el overlay */
   padding: 16px;
   border-radius: 8px;
   width: 92%;
@@ -286,7 +290,18 @@ input:focus {
 /* Ensure modal and editor content are left-aligned (override .App text-align:center) */
 .confirm-dialog,
 .md-editor,
-.md-preview-holder,
+.md-preview_holder,
 .md-preview {
   text-align: left;
+}
+
+/* Asegurar opacidad total en el modal y contenedores internos */
+.confirm-dialog,
+.confirm-dialog .md-area-wrapper,
+.confirm-dialog .md-write-holder,
+.confirm-dialog .md-preview-holder {
+  background-color: #ffffff !important;
+  opacity: 1 !important;
+  background-clip: padding-box;
+  mix-blend-mode: normal;
 }
