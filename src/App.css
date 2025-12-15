@@ -282,3 +282,11 @@ input:focus {
   .md-header-toolbar { gap: 4px; }
   .md-btn { padding: 6px; font-size: 12px; }
 }
+
+/* Ensure modal and editor content are left-aligned (override .App text-align:center) */
+.confirm-dialog,
+.md-editor,
+.md-preview-holder,
+.md-preview {
+  text-align: left;
+}
