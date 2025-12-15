@@ -1,6 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { marked } from 'marked';
-import DOMPurify from 'dompurify';
+import { renderMarkdown } from '../utils/markdown';
 
 function Icon({ children }) {
   return (
@@ -12,10 +11,21 @@ function Icon({ children }) {
   );
 }
 
+// Mock upload function: simula subida y devuelve URL
+function mockUpload(file) {
+  return new Promise((resolve) => {
+    setTimeout(() => {
+      const fakeUrl = `https://cdn.example.com/uploads/${encodeURIComponent(file.name)}`;
+      resolve({ url: fakeUrl, name: file.name });
+    }, 700);
+  });
+}
+
 function CardModal({ open, card, listId, onSave, onClose }) {
   const [title, setTitle] = useState(card ? card.title : '');
   const [description, setDescription] = useState(card ? card.description || '' : '');
   const [preview, setPreview] = useState(false);
+  const [uploading, setUploading] = useState(false);
   const modalRef = useRef(null);
   const textareaRef = useRef(null);
   const fileInputRef = useRef(null);
@@ -147,10 +157,14 @@ function CardModal({ open, card, listId, onSave, onClose }) {
     if (fileInputRef.current) fileInputRef.current.click();
   };
 
-  const handleAttach = (e) => {
+  const handleAttach = async (e) => {
     const f = e.target.files && e.target.files[0];
     if (!f) return;
-    const insertText = `[attached: ${f.name}]`;
+    setUploading(true);
+    // Simular subida de archivo
+    const { url } = await mockUpload(f);
+    setUploading(false);
+    const insertText = `[attached: ${f.name}](${url})`;
     const ta = textareaRef.current;
     if (!ta) return setDescription((d) => d + '\n' + insertText);
     const start = ta.selectionStart;
@@ -169,10 +183,9 @@ function CardModal({ open, card, listId, onSave, onClose }) {
   // Render sanitized HTML using marked + DOMPurify
   const renderPreview = (md) => {
     try {
-      const raw = marked.parse(md || '');
-      return DOMPurify.sanitize(raw);
+      return renderMarkdown(md || '');
     } catch (e) {
-      return DOMPurify.sanitize(String(md || ''));
+      return String(md || '');
     }
   };
 
@@ -211,7 +224,7 @@ function CardModal({ open, card, listId, onSave, onClose }) {
               {/* Attach button + hidden file input */}
               <input ref={fileInputRef} type="file" style={{ display: 'none' }} onChange={handleAttach} aria-hidden="true" />
               <button type="button" title="Attach file" aria-label="Attach file" onClick={onAttachClick} className="md-btn attach-btn">
-                <svg width="16" height="16" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path fill="currentColor" d="M21.44 11.05l-9.19 9.2a5 5 0 1 1-7.07-7.07l8.48-8.48a3 3 0 1 1 4.24 4.24L9.7 17.17a1 1 0 0 1-1.41-1.41l7.07-7.07"/></svg>
+                {uploading ? 'Subiendo...' : '📎 Adjuntar archivo'}
               </button>
 
               <button type="button" title="Preview" aria-label="Preview" onClick={() => setPreview((p) => !p)} className="md-btn preview-toggle">{preview ? 'Edit' : 'Preview'}</button>
