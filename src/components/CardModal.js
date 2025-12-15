@@ -1,27 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
-
-function simpleMarkdownToHtml(md) {
-  if (!md) return '';
-  // very small converter for preview purpose (not full markdown)
-  let html = md
-    .replace(/&/g, '&amp;')
-    .replace(/</g, '&lt;')
-    .replace(/>/g, '&gt;');
-
-  // code blocks ```
-  html = html.replace(/```([\s\S]*?)```/g, (m, p1) => `<pre><code>${p1.replace(/</g, '&lt;')}</code></pre>`);
-  // inline code
-  html = html.replace(/`([^`]+)`/g, '<code>$1</code>');
-  // bold
-  html = html.replace(/\*\*([^*]+)\*\*/g, '<strong>$1</strong>');
-  // italic
-  html = html.replace(/_([^_]+)_/g, '<em>$1</em>');
-  // unordered lists
-  html = html.replace(/(^|\n)-\s(.+)(?=(\n|$))/g, (m, p1, p2) => `${p1}<ul><li>${p2}</li></ul>`);
-  // convert remaining newlines to <br>
-  html = html.replace(/\n/g, '<br/>');
-  return html;
-}
+import { marked } from 'marked';
+import DOMPurify from 'dompurify';
 
 function Icon({ children }) {
   return (
@@ -187,6 +166,16 @@ function CardModal({ open, card, listId, onSave, onClose }) {
     e.target.value = '';
   };
 
+  // Render sanitized HTML using marked + DOMPurify
+  const renderPreview = (md) => {
+    try {
+      const raw = marked.parse(md || '');
+      return DOMPurify.sanitize(raw);
+    } catch (e) {
+      return DOMPurify.sanitize(String(md || ''));
+    }
+  };
+
   return (
     <div className="confirm-overlay">
       <div
@@ -241,7 +230,7 @@ function CardModal({ open, card, listId, onSave, onClose }) {
               />
             ) : (
               <div className="md-preview-holder" aria-live="polite">
-                <div className="md-preview" dangerouslySetInnerHTML={{ __html: simpleMarkdownToHtml(description) }} />
+                <div className="md-preview" dangerouslySetInnerHTML={{ __html: renderPreview(description) }} />
               </div>
             )}
           </div>
