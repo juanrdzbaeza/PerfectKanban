@@ -137,3 +137,121 @@
 .confirm-dialog button {
   min-width: 72px;
 }
+
+/* Editor-specific styles (toolbar, buttons, preview) */
+.md-editor {
+  max-width: 760px;
+  width: 100%;
+  background: transparent;
+  margin: 8px 0;
+}
+
+.md-area-wrapper {
+  background: #fff;
+  border-radius: 8px;
+  overflow: hidden;
+  border: 1px solid #e6e6e9;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.04);
+}
+
+.md-header {
+  display: flex;
+  align-items: center;
+  padding: 8px 10px;
+  gap: 8px;
+  border-bottom: 1px solid #eceef0;
+  background: linear-gradient(180deg,#fbfcfd,#fff);
+}
+
+.md-header-toolbar {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+
+.md-btn {
+  appearance: none;
+  border: 1px solid transparent;
+  background: transparent;
+  padding: 6px 8px;
+  border-radius: 6px;
+  cursor: pointer;
+  color: #222;
+  font-size: 13px;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.md-btn:hover {
+  background: #f4f6f8;
+  border-color: #e3e6ea;
+}
+
+.md-btn:active {
+  background: #eef3f7;
+}
+
+.md-btn svg { display: inline-block; vertical-align: middle; }
+
+.attach-btn svg { width: 16px; height: 16px; }
+
+.preview-toggle {
+  margin-left: auto;
+  background: #fff;
+  border: 1px solid #e3e6ea;
+}
+
+.md-write-holder {
+  padding: 10px;
+  background: #fff;
+}
+
+.md-write-holder textarea {
+  width: 100%;
+  min-height: 140px;
+  padding: 10px;
+  border: 1px solid #e6e9ec;
+  border-radius: 6px;
+  font-family: inherit;
+  font-size: 14px;
+  line-height: 1.5;
+  resize: vertical;
+  box-sizing: border-box;
+}
+
+.md-preview-holder {
+  padding: 12px;
+  border: 1px solid #e6e9ec;
+  border-radius: 6px;
+  background: #fff;
+  min-height: 100px;
+}
+
+.md-preview pre {
+  background: #f6f8fa;
+  padding: 10px;
+  border-radius: 6px;
+  overflow: auto;
+}
+
+.md-preview code {
+  background: rgba(27,31,35,0.05);
+  padding: 2px 4px;
+  border-radius: 4px;
+}
+
+/* focus styles */
+.md-header .md-btn:focus,
+.md-write-holder textarea:focus,
+input:focus {
+  outline: 3px solid rgba(90, 100, 180, 0.12);
+  outline-offset: 2px;
+}
+
+/* small responsive tweaks */
+@media (max-width: 640px) {
+  .md-header-toolbar { gap: 4px; }
+  .md-btn { padding: 6px; font-size: 12px; }
+}
