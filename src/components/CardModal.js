@@ -71,15 +71,29 @@ function CardModal({ open, card, listId, onSave, onClose }) {
 
   return (
     <div className="confirm-overlay">
-      <div className="confirm-dialog" role="dialog" aria-modal="true" aria-labelledby="card-modal-title" ref={modalRef} tabIndex={-1}>
+      <div
+        className="confirm-dialog"
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="card-modal-title"
+        aria-describedby="card-modal-desc"
+        ref={modalRef}
+        tabIndex={-1}
+      >
         <h3 id="card-modal-title">Detalles de la tarjeta</h3>
+
+        {/* Descripción para tecnologías asistivas con instrucciones de teclado */}
+        <p id="card-modal-desc" style={{ fontSize: 13, color: '#555', marginTop: 4 }}>
+          Usa Tab para navegar entre controles. Presiona Esc para cerrar sin guardar. Los cambios se aplican al pulsar "Guardar".
+        </p>
+
         <div>
-          <label>Título</label>
-          <input value={title} onChange={(e) => setTitle(e.target.value)} />
+          <label htmlFor="card-title-input">Título</label>
+          <input id="card-title-input" value={title} onChange={(e) => setTitle(e.target.value)} />
         </div>
         <div>
-          <label>Descripción</label>
-          <textarea value={description} onChange={(e) => setDescription(e.target.value)} />
+          <label htmlFor="card-desc-textarea">Descripción</label>
+          <textarea id="card-desc-textarea" value={description} onChange={(e) => setDescription(e.target.value)} />
         </div>
         <div style={{ display: 'flex', gap: 8, justifyContent: 'flex-end' }}>
           <button onClick={onClose}>Cancelar</button>
