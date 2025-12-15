@@ -95,9 +95,12 @@
   background: #fff;
   padding: 16px;
   border-radius: 8px;
-  width: 90%;
-  max-width: 480px;
+  width: 92%;
+  max-width: 900px;
+  max-height: 80vh; /* limit modal height to viewport */
   box-shadow: 0 8px 24px rgba(0,0,0,0.2);
+  display: flex;
+  flex-direction: column;
 }
 
 .confirm-dialog h3 {
@@ -124,6 +127,38 @@
 
 .confirm-dialog textarea { min-height: 80px; resize: vertical; }
 
+/* Ensure modal content scrolls internally when too tall */
+.confirm-dialog > .md-area-wrapper,
+.confirm-dialog > .md-area-wrapper + div,
+.confirm-dialog .md-write-holder,
+.confirm-dialog .md-preview-holder {
+  overflow: auto;
+}
+
+/* Make the write/preview area flexible so buttons/footer stay visible */
+.md-area-wrapper {
+  flex: 1 1 auto;
+  display: flex;
+  flex-direction: column;
+}
+
+.md-write-holder,
+.md-preview-holder {
+  flex: 1 1 auto;
+  overflow: auto;
+}
+
+/* Footer (buttons) stay at the bottom */
+.confirm-dialog > div:last-child {
+  flex: 0 0 auto;
+}
+
+/* Reduce padding inside preview when large */
+.md-preview-holder { padding: 10px; }
+
+/* Ensure long preview content wraps and doesn't overflow horizontally */
+.md-preview { word-wrap: break-word; white-space: pre-wrap; }
+
 /* Small helpers for inputs inside cards/columns */
 .column input,
 .card input {
@@ -144,14 +179,6 @@
   width: 100%;
   background: transparent;
   margin: 8px 0;
-}
-
-.md-area-wrapper {
-  background: #fff;
-  border-radius: 8px;
-  overflow: hidden;
-  border: 1px solid #e6e6e9;
-  box-shadow: 0 1px 3px rgba(0,0,0,0.04);
 }
 
 .md-header {
