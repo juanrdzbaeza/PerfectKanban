@@ -79,3 +79,61 @@
   display: flex;
   align-items: center;
 }
+
+/* Modal / Confirm dialog styles */
+.confirm-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.45);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+}
+
+.confirm-dialog {
+  background: #fff;
+  padding: 16px;
+  border-radius: 8px;
+  width: 90%;
+  max-width: 480px;
+  box-shadow: 0 8px 24px rgba(0,0,0,0.2);
+}
+
+.confirm-dialog h3 {
+  margin-top: 0;
+}
+
+.confirm-dialog label {
+  display: block;
+  font-size: 12px;
+  color: #333;
+  margin-bottom: 4px;
+}
+
+.confirm-dialog input,
+.confirm-dialog textarea {
+  width: 100%;
+  box-sizing: border-box;
+  padding: 8px;
+  border: 1px solid #ddd;
+  border-radius: 6px;
+  font-size: 14px;
+  margin-bottom: 12px;
+}
+
+.confirm-dialog textarea { min-height: 80px; resize: vertical; }
+
+/* Small helpers for inputs inside cards/columns */
+.column input,
+.card input {
+  padding: 6px 8px;
+  font-size: 14px;
+  border-radius: 6px;
+  border: 1px solid #ccc;
+}
+
+/* ensure buttons spacing inside dialogs */
+.confirm-dialog button {
+  min-width: 72px;
+}
