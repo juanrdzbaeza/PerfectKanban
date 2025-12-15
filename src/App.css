@@ -95,9 +95,12 @@
   background: #fff;
   padding: 16px;
   border-radius: 8px;
-  width: 90%;
-  max-width: 480px;
+  width: 92%;
+  max-width: 900px;
+  max-height: 80vh; /* limit modal height to viewport */
   box-shadow: 0 8px 24px rgba(0,0,0,0.2);
+  display: flex;
+  flex-direction: column;
 }
 
 .confirm-dialog h3 {
@@ -124,6 +127,38 @@
 
 .confirm-dialog textarea { min-height: 80px; resize: vertical; }
 
+/* Ensure modal content scrolls internally when too tall */
+.confirm-dialog > .md-area-wrapper,
+.confirm-dialog > .md-area-wrapper + div,
+.confirm-dialog .md-write-holder,
+.confirm-dialog .md-preview-holder {
+  overflow: auto;
+}
+
+/* Make the write/preview area flexible so buttons/footer stay visible */
+.md-area-wrapper {
+  flex: 1 1 auto;
+  display: flex;
+  flex-direction: column;
+}
+
+.md-write-holder,
+.md-preview-holder {
+  flex: 1 1 auto;
+  overflow: auto;
+}
+
+/* Footer (buttons) stay at the bottom */
+.confirm-dialog > div:last-child {
+  flex: 0 0 auto;
+}
+
+/* Reduce padding inside preview when large */
+.md-preview-holder { padding: 10px; }
+
+/* Ensure long preview content wraps and doesn't overflow horizontally */
+.md-preview { word-wrap: break-word; white-space: pre-wrap; }
+
 /* Small helpers for inputs inside cards/columns */
 .column input,
 .card input {
@@ -136,4 +171,114 @@
 /* ensure buttons spacing inside dialogs */
 .confirm-dialog button {
   min-width: 72px;
+}
+
+/* Editor-specific styles (toolbar, buttons, preview) */
+.md-editor {
+  max-width: 760px;
+  width: 100%;
+  background: transparent;
+  margin: 8px 0;
+}
+
+.md-header {
+  display: flex;
+  align-items: center;
+  padding: 8px 10px;
+  gap: 8px;
+  border-bottom: 1px solid #eceef0;
+  background: linear-gradient(180deg,#fbfcfd,#fff);
+}
+
+.md-header-toolbar {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+
+.md-btn {
+  appearance: none;
+  border: 1px solid transparent;
+  background: transparent;
+  padding: 6px 8px;
+  border-radius: 6px;
+  cursor: pointer;
+  color: #222;
+  font-size: 13px;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.md-btn:hover {
+  background: #f4f6f8;
+  border-color: #e3e6ea;
+}
+
+.md-btn:active {
+  background: #eef3f7;
+}
+
+.md-btn svg { display: inline-block; vertical-align: middle; }
+
+.attach-btn svg { width: 16px; height: 16px; }
+
+.preview-toggle {
+  margin-left: auto;
+  background: #fff;
+  border: 1px solid #e3e6ea;
+}
+
+.md-write-holder {
+  padding: 10px;
+  background: #fff;
+}
+
+.md-write-holder textarea {
+  width: 100%;
+  min-height: 140px;
+  padding: 10px;
+  border: 1px solid #e6e9ec;
+  border-radius: 6px;
+  font-family: inherit;
+  font-size: 14px;
+  line-height: 1.5;
+  resize: vertical;
+  box-sizing: border-box;
+}
+
+.md-preview-holder {
+  padding: 12px;
+  border: 1px solid #e6e9ec;
+  border-radius: 6px;
+  background: #fff;
+  min-height: 100px;
+}
+
+.md-preview pre {
+  background: #f6f8fa;
+  padding: 10px;
+  border-radius: 6px;
+  overflow: auto;
+}
+
+.md-preview code {
+  background: rgba(27,31,35,0.05);
+  padding: 2px 4px;
+  border-radius: 4px;
+}
+
+/* focus styles */
+.md-header .md-btn:focus,
+.md-write-holder textarea:focus,
+input:focus {
+  outline: 3px solid rgba(90, 100, 180, 0.12);
+  outline-offset: 2px;
+}
+
+/* small responsive tweaks */
+@media (max-width: 640px) {
+  .md-header-toolbar { gap: 4px; }
+  .md-btn { padding: 6px; font-size: 12px; }
 }
