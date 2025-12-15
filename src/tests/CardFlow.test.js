@@ -39,13 +39,12 @@ describe('Card modal and confirm-delete flow', () => {
     await userEvent.click(saveBtn);
 
     // Modal should close and title updated in the card
-    await waitFor(() => expect(screen.getByText(/Título modificado/i)).toBeInTheDocument());
+    const updatedTitle = await screen.findByText(/Título modificado/i);
+    expect(updatedTitle).toBeInTheDocument();
 
-    // Now delete the card: find the delete button inside the same card container as the updated title
-    const updatedTitleEl = screen.getByText(/Título modificado/i);
-    const cardContainer = updatedTitleEl.closest('.card');
-    expect(cardContainer).toBeTruthy();
-    const deleteBtn = within(cardContainer).getByRole('button', { name: /Eliminar/i });
+    // Now delete the card: locate the card container by accessible role/name and find its delete button
+    const cardWrapper = screen.getByRole('button', { name: /Título modificado/i });
+    const deleteBtn = within(cardWrapper).getByRole('button', { name: /Eliminar/i });
     await userEvent.click(deleteBtn);
 
     // Confirm dialog appears (look for Confirmar button)
