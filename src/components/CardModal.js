@@ -1,6 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { marked } from 'marked';
-import DOMPurify from 'dompurify';
+import { renderMarkdown } from '../utils/markdown';
 
 function Icon({ children }) {
   return (
@@ -12,10 +11,22 @@ function Icon({ children }) {
   );
 }
 
+// Mock upload function: simula subida y devuelve URL
+function mockUpload(file) {
+  return new Promise((resolve) => {
+    setTimeout(() => {
+      const fakeUrl = `https://cdn.example.com/uploads/${encodeURIComponent(file.name)}`;
+      resolve({ url: fakeUrl, name: file.name });
+    }, 700);
+  });
+}
+
 function CardModal({ open, card, listId, onSave, onClose }) {
   const [title, setTitle] = useState(card ? card.title : '');
   const [description, setDescription] = useState(card ? card.description || '' : '');
   const [preview, setPreview] = useState(false);
+  const [uploading, setUploading] = useState(false);
+  const [format, setFormat] = useState('');
   const modalRef = useRef(null);
   const textareaRef = useRef(null);
   const fileInputRef = useRef(null);
@@ -138,7 +149,7 @@ function CardModal({ open, card, listId, onSave, onClose }) {
     setDescription(newValue);
     requestAnimationFrame(() => {
       ta.focus();
-      ta.selectionStart = start + 4;
+      ta.selectionStart = start + 4; // inside code fence
       ta.selectionEnd = start + 4 + selected.length;
     });
   };
@@ -147,10 +158,14 @@ function CardModal({ open, card, listId, onSave, onClose }) {
     if (fileInputRef.current) fileInputRef.current.click();
   };
 
-  const handleAttach = (e) => {
+  const handleAttach = async (e) => {
     const f = e.target.files && e.target.files[0];
     if (!f) return;
-    const insertText = `[attached: ${f.name}]`;
+    setUploading(true);
+    // Simular subida de archivo
+    const { url } = await mockUpload(f);
+    setUploading(false);
+    const insertText = `[attached: ${f.name}](${url})`;
     const ta = textareaRef.current;
     if (!ta) return setDescription((d) => d + '\n' + insertText);
     const start = ta.selectionStart;
@@ -166,13 +181,73 @@ function CardModal({ open, card, listId, onSave, onClose }) {
     e.target.value = '';
   };
 
+  // applyBlockFormat will change the block level formatting
+  const applyBlockFormat = (fmt) => {
+    const ta = textareaRef.current;
+    if (!ta) return;
+    const val = ta.value;
+    const start = ta.selectionStart;
+    const end = ta.selectionEnd;
+
+    // split into lines
+    const lines = val.split('\n');
+    const getLineIndex = (pos) => {
+      if (pos <= 0) return 0;
+      return Math.max(0, val.substring(0, pos).split('\n').length - 1);
+    };
+
+    const startLine = getLineIndex(start);
+    const endLine = getLineIndex(Math.max(0, end - 1));
+
+    // extract selected lines
+    const beforeLines = lines.slice(0, startLine);
+    const targetLines = lines.slice(startLine, endLine + 1);
+    const afterLines = lines.slice(endLine + 1);
+
+    // normalize: remove existing header/blockquote prefixes (allow leading spaces)
+    const normalized = targetLines.map((ln) => ln.replace(/^\s*(#{1,6}\s+|>\s*)/, ''));
+
+    let transformedLines;
+    if (fmt === 'p') {
+      transformedLines = normalized.map((ln) => ln);
+    } else if (fmt === 'blockquote') {
+      transformedLines = normalized.map((ln) => (ln.trim() ? `> ${ln}` : ln));
+    } else if (fmt && fmt.startsWith('h')) {
+      const level = parseInt(fmt.replace('h', ''), 10);
+      const prefix = '#'.repeat(level) + ' ';
+      transformedLines = normalized.map((ln) => (ln.trim() ? `${prefix}${ln}` : ln));
+    } else {
+      transformedLines = normalized.map((ln) => ln);
+    }
+
+    // reassemble
+    const beforeText = beforeLines.length ? beforeLines.join('\n') + '\n' : '';
+    const transformedText = transformedLines.join('\n');
+    const afterText = afterLines.length ? '\n' + afterLines.join('\n') : '';
+    const newValue = beforeText + transformedText + afterText;
+
+    setDescription(newValue);
+
+    // compute new selection bounds
+    const newStart = beforeText.length;
+    const newEnd = beforeText.length + transformedText.length;
+
+    requestAnimationFrame(() => {
+      ta.focus();
+      ta.selectionStart = newStart;
+      ta.selectionEnd = newEnd;
+    });
+
+    // reset controlled select
+    setFormat('');
+  };
+
   // Render sanitized HTML using marked + DOMPurify
   const renderPreview = (md) => {
     try {
-      const raw = marked.parse(md || '');
-      return DOMPurify.sanitize(raw);
+      return renderMarkdown(md || '');
     } catch (e) {
-      return DOMPurify.sanitize(String(md || ''));
+      return String(md || '');
     }
   };
 
@@ -202,6 +277,15 @@ function CardModal({ open, card, listId, onSave, onClose }) {
         <div className="md-area-wrapper" style={{ marginTop: 12 }}>
           <div className="md-header">
             <div role="toolbar" aria-label="Editor toolbar" className="md-header-toolbar">
+              <select aria-label="Formato" className="md-format-select" value={format} onChange={(e) => { const v = e.target.value; setFormat(v); if (v) { applyBlockFormat(v); } }}>
+                <option value="">Formato</option>
+                <option value="p">Parrafo</option>
+                <option value="h1"># Título1</option>
+                <option value="h2">## Título2</option>
+                <option value="h3">### Título3</option>
+                <option value="h4">#### Título4</option>
+                <option value="blockquote">> Entrada</option>
+              </select>
               <button type="button" title="Bold" aria-label="Bold" onClick={() => wrapSelection('**')} className="md-btn"><Icon>B</Icon></button>
               <button type="button" title="Italic" aria-label="Italic" onClick={() => wrapSelection('_')} className="md-btn"><Icon>I</Icon></button>
               <button type="button" title="Code" aria-label="Code" onClick={insertCodeBlock} className="md-btn"><Icon>{`</>`}</Icon></button>
@@ -211,7 +295,7 @@ function CardModal({ open, card, listId, onSave, onClose }) {
               {/* Attach button + hidden file input */}
               <input ref={fileInputRef} type="file" style={{ display: 'none' }} onChange={handleAttach} aria-hidden="true" />
               <button type="button" title="Attach file" aria-label="Attach file" onClick={onAttachClick} className="md-btn attach-btn">
-                <svg width="16" height="16" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path fill="currentColor" d="M21.44 11.05l-9.19 9.2a5 5 0 1 1-7.07-7.07l8.48-8.48a3 3 0 1 1 4.24 4.24L9.7 17.17a1 1 0 0 1-1.41-1.41l7.07-7.07"/></svg>
+                {uploading ? 'Subiendo...' : '📎 Adjuntar archivo'}
               </button>
 
               <button type="button" title="Preview" aria-label="Preview" onClick={() => setPreview((p) => !p)} className="md-btn preview-toggle">{preview ? 'Edit' : 'Preview'}</button>
