@@ -125,9 +125,9 @@ Instrucciones rápidas:
 
 1. Construir y levantar ambos servicios:
 
-```powershell
+```bash
 # Construye imágenes y levanta contenedores
-docker-compose up --build
+docker compose up --build
 ```
 
 2. Accede al cliente en http://localhost:3000 y al backend en http://localhost:4000/api/health.

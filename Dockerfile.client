@@ -12,5 +12,5 @@ COPY . .
 ENV CHOKIDAR_USEPOLLING=true
 EXPOSE 3000
 
-CMD ["npm", "start"]
-
+# Reemplaza la proxy en package.json por http://api:4000 (resoluble en Docker) y arranca CRA
+CMD ["sh", "-c", "sed -i 's|\"proxy\": \"http://localhost:4000\"|\"proxy\": \"http://api:4000\"|' package.json && npm start"]
