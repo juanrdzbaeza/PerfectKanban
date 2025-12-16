@@ -135,8 +135,5 @@ Contribuir
 
 Licencia
 
-- Proyecto de ejemplo / educativo. Añade aquí la licencia si quieres publicar.
+- Proyecto de ejemplo / educativo. bajo licencia del MIT.
 
----
-
-Si quieres, actualizo también una pequeña sección con comandos útiles para migración automática desde `localStorage` (guion corto) o implemento un indicador visual de sincronización en la UI ahora mismo. ¿Qué prefieres?
