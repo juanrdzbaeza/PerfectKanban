@@ -114,6 +114,32 @@ npm run build
 
 - En producción puedes servir el build estático y el backend desde el mismo servidor (o usar un reverse proxy). Asegúrate de configurar la ruta al backend en las peticiones si no usas el proxy de CRA.
 
+## Docker (opcional)
+
+Si quieres levantar toda la aplicación con Docker y docker-compose, hay un archivo `docker-compose.yml` en la raíz que arranca dos servicios:
+
+- `api` — el backend Express (puerto 4000)
+- `client` — el dev server de CRA (puerto 3000)
+
+Instrucciones rápidas:
+
+1. Construir y levantar ambos servicios:
+
+```bash
+# Construye imágenes y levanta contenedores
+docker compose up --build
+```
+
+2. Accede al cliente en http://localhost:3000 y al backend en http://localhost:4000/api/health.
+
+Notas importantes:
+
+- El volumen `./server/data:/app/server/data` en `docker-compose.yml` hace que `server/data/kanban.db` se persista en tu máquina host. Esto permite que la base de datos sobreviva a reinicios del contenedor.
+- `.dockerignore` está configurado para evitar copiar `node_modules`, `build`, `.git` y archivos sensibles al contexto de la imagen.
+- En entornos de producción deberías usar una configuración distinta: compilar el cliente (`npm run build`) y servir los ficheros estáticos desde el backend o un servidor web (Nginx), además de revisar variables de entorno y seguridad.
+
+---
+
 Mejoras recomendadas (próximos pasos)
 
 - Indicador de sincronización en la UI (sincronizado / sincronizando / error).
